@@ -4,7 +4,7 @@ import getpass
 import gcredentials
 import jellyfish
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 def get_authenticated_client():
     gmapi = gmusicapi.Mobileclient()
@@ -13,6 +13,10 @@ def get_authenticated_client():
     success = gmapi.login(email, getpass.getpass(), gcredentials.AID_HARDCODE)
     logging.info('Logged in: {}'.format(success))
     return gmapi
+
+
+def search(client, phrase):
+    return client.search(phrase)
 
 
 def find_songs(results, filter):
