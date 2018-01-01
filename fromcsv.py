@@ -20,7 +20,8 @@ def read_csv(filename):
 @click.argument('filename')
 @click.option('--create/--no-create', default=False, help='Creates a playlist')
 @click.option('--name', default=None, help='Playlist name')
-def main(filename, create, name):
+@click.option('--add', default='song', help='Which results to add. Defaults to \'song\'. Values = [\'song\', \'album\']' )
+def main(filename, create, name, add):
     logging.info('Reading CSV File: {}'.format(filename))
     rows, headers = read_csv(filename)
     logging.info('{} data rows found with header: '.format(len(rows), headers))
@@ -31,13 +32,16 @@ def main(filename, create, name):
         search = row[headers[0]]
         logging.info('Searching: \"{}\" - {}'.format(search, row))
         raw = gmusic.search(gmclient, search)
-        hits = gmusic.find_songs(raw, row)
+        hits = []
+        if add == 'song':
+            hits = gmusic.find_songs(gmclient, raw, row)
+            hits = hits[0:1]
+        if add == 'album':
+            hits = gmusic.find_albums(gmclient, raw, row)
         if hits:
-            best = hits[0]
-            # import pprint
-            # pprint.pprint(best)
-            logging.info('Found: {} - {} - {}'.format(best['title'], best['artist'], best['album']))
-            tracks.append(best)
+            for hit in hits:
+                logging.info('Found: {} - {} - {}'.format(hit['title'], hit['artist'], hit['album']))
+                tracks.append(hit)
         else:
             logging.warning('No results found for {}'.format(search))
     logging.info('Searched for {} rows and found {} tracks'.format(len(rows), len(tracks)))
