@@ -20,10 +20,13 @@ def search(client, phrase):
 
 
 def string_similar(s1, s2):
-    similar = jellyfish.match_rating_comparison(s1, s2)
-    if not similar:
-        similar = jellyfish.jaro_distance(s1, s2) >= 0.8
+    s1 = s1.lower()
+    s2 = s2.lower()
+    # similar = jellyfish.match_rating_comparison(s1, s2)
+    # if not similar:
+    similar = jellyfish.jaro_distance(s1, s2) >= 0.8
     assert similar != None
+    #print(s1, s2, jellyfish.match_rating_comparison(s1, s2), jellyfish.jaro_distance(s1, s2))
     return similar
 
 

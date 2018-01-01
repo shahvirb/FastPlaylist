@@ -21,7 +21,8 @@ def read_csv(filename):
 @click.option('--create/--no-create', default=False, help='Creates a playlist')
 @click.option('--name', default=None, help='Playlist name')
 @click.option('--add', default='song', help='Which results to add. Defaults to \'song\'. Values = [\'song\', \'album\']' )
-def main(filename, create, name, add):
+@click.option('--step/--no-step', default=False, help='Step through each row in the csv')
+def main(filename, create, name, add, step):
     logging.info('Reading CSV File: {}'.format(filename))
     rows, headers = read_csv(filename)
     logging.info('{} data rows found with header: '.format(len(rows), headers))
@@ -44,6 +45,8 @@ def main(filename, create, name, add):
                 tracks.append(hit)
         else:
             logging.warning('No results found for {}'.format(search))
+        if step:
+            input('Press enter to continue')
     logging.info('Searched for {} rows and found {} tracks'.format(len(rows), len(tracks)))
     
     if create:
