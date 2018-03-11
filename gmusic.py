@@ -19,12 +19,14 @@ def search(client, phrase):
     return client.search(phrase)
 
 
-def string_similar(s1, s2):
+def string_score(s1, s2):
     s1 = s1.lower()
     s2 = s2.lower()
-    # similar = jellyfish.match_rating_comparison(s1, s2)
-    # if not similar:
-    similar = jellyfish.jaro_distance(s1, s2) >= 0.8
+    return jellyfish.jaro_distance(s1, s2)
+
+
+def string_similar(s1, s2):
+    similar = string_score(s1, s2) >= 0.8
     assert similar != None
     #print(s1, s2, jellyfish.match_rating_comparison(s1, s2), jellyfish.jaro_distance(s1, s2))
     return similar
@@ -42,7 +44,7 @@ def find_songs(client, results, filter):
 
 
 def find_albums(client, results, filter):
-    tracks = []
+    albums = []
     for hit in results['album_hits']:
         hit = hit['album']
         keys = set(filter.keys()).intersection(hit.keys())
@@ -50,5 +52,12 @@ def find_albums(client, results, filter):
         assert len(matches) == len(keys)
         if not False in matches:
             album = client.get_album_info(hit['albumId'], include_tracks=True)
-            tracks += album['tracks']
+            score = string_score(hit['name'], filter['name'])
+            albums.append((album, score))
+    
+    tracks = []
+    for sorted_albums in sorted(albums, reverse=True, key=lambda x: x[1]):
+        tracks += sorted_albums[0]['tracks']
+        break # Only add the first album. Assumption: first result is the best result
+    
     return tracks

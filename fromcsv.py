@@ -29,6 +29,7 @@ def main(filename, create, name, add, step):
     
     gmclient = gmusic.get_authenticated_client()
     tracks = []
+    no_results = []
     for row in rows:
         search = row[headers[0]]
         logging.info('Searching: \"{}\" - {}'.format(search, row))
@@ -44,7 +45,9 @@ def main(filename, create, name, add, step):
                 logging.info('Found: {} - {} - {}'.format(hit['title'], hit['artist'], hit['album']))
                 tracks.append(hit)
         else:
-            logging.warning('No results found for {}'.format(search))
+            warn = 'No results found for {}'.format(search)
+            no_results.append(warn)
+            logging.warning(warn)
         if step:
             input('Press enter to continue')
     logging.info('Searched for {} rows and found {} tracks'.format(len(rows), len(tracks)))

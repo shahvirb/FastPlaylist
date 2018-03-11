@@ -38,6 +38,7 @@ def main(htmlfile, parserpy, csvfile):
     data = parser.parse(soup)
     data = process(data)
     logging.debug(data)
+    logging.info('Parsed {} rows'.format(len(data)))
     
     if csvfile:
         import csv
