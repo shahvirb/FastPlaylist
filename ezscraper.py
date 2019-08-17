@@ -3,7 +3,9 @@ import requests
 import click
 from unidecode import unidecode
 import logging
-logging.basicConfig(level=logging.DEBUG)
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 def fetch_html(url):
@@ -18,7 +20,7 @@ def make_soup(html):
 def process(data):
     for d in data:
         for key in d:
-            #logging.debug('Processing {}'.format(d[key]))
+            #logger.debug('Processing {}'.format(d[key]))
             d[key] = unidecode(d[key])
     return data
 
@@ -28,26 +30,27 @@ def process(data):
 @click.argument('parserpy')
 @click.option('--csvfile', default=None, help='csv output file path')
 def main(htmlfile, parserpy, csvfile):
+    logger.addHandler(logging.StreamHandler())
     soup = None
-    with open(htmlfile, 'r') as html:
+    with open(htmlfile, 'r', encoding='utf8') as html:
         soup = make_soup(html)
     
-    logging.info('Importing {}'.format(parserpy))
+    logger.info('Importing {}'.format(parserpy))
     parselib = __import__(parserpy)
     parser = parselib.PARSER()
     data = parser.parse(soup)
     data = process(data)
-    logging.debug(data)
-    logging.info('Parsed {} rows'.format(len(data)))
+    logger.debug(data)
+    logger.info('Parsed {} rows'.format(len(data)))
     
     if csvfile:
         import csv
         with open(csvfile, 'w', newline='') as file:
-            logging.info('Writing to {}'.format(csvfile))
+            logger.info('Writing to {}'.format(csvfile))
             writer = csv.DictWriter(file, delimiter=',', fieldnames=list(data[0]))
             writer.writeheader()
             writer.writerows(data)
-        logging.info('Write complete')
+        logger.info('Write complete')
 
 
 if __name__ == '__main__':

@@ -3,8 +3,8 @@ import logging
 import click
 import csv
 
-logging.basicConfig(level=logging.DEBUG)
-
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 def read_csv(filename):
     data = []
@@ -23,16 +23,17 @@ def read_csv(filename):
 @click.option('--add', default='song', help='Which results to add. Defaults to \'song\'. Values = [\'song\', \'album\']' )
 @click.option('--step/--no-step', default=False, help='Step through each row in the csv')
 def main(filename, create, name, add, step):
-    logging.info('Reading CSV File: {}'.format(filename))
+    logger.addHandler(logging.StreamHandler())
+    logger.info('Reading CSV File: {}'.format(filename))
     rows, headers = read_csv(filename)
-    logging.info('{} data rows found with header: '.format(len(rows), headers))
+    logger.info('{} data rows found with header: '.format(len(rows), headers))
     
     gmclient = gmusic.get_authenticated_client()
     tracks = []
     no_results = []
     for row in rows:
         search = row[headers[0]]
-        logging.info('Searching: \"{}\" - {}'.format(search, row))
+        logger.info('Searching: \"{}\" - {}'.format(search, row))
         raw = gmusic.search(gmclient, search)
         hits = []
         if add == 'song':
@@ -42,24 +43,24 @@ def main(filename, create, name, add, step):
             hits = gmusic.find_albums(gmclient, raw, row)
         if hits:
             for hit in hits:
-                logging.info('Found: {} - {} - {}'.format(hit['title'], hit['artist'], hit['album']))
+                logger.info('Found: {} - {} - {}'.format(hit['title'], hit['artist'], hit['album']))
                 tracks.append(hit)
         else:
             warn = 'No results found for {}'.format(search)
             no_results.append(warn)
-            logging.warning(warn)
+            logger.warning(warn)
         if step:
             input('Press enter to continue')
-    logging.info('Searched for {} rows and found {} tracks'.format(len(rows), len(tracks)))
+    logger.info('Searched for {} rows and found {} tracks'.format(len(rows), len(tracks)))
     
     if create:
         if not name:
             name = filename
         plid = gmclient.create_playlist(name)
-        logging.info('Created playlist {} as ID {}'.format(name, plid))
+        logger.info('Created playlist {} as ID {}'.format(name, plid))
         song_ids = [track['storeId'] for track in tracks]
         gmclient.add_songs_to_playlist(plid, song_ids)
-        logging.info('Added {} tracks to playlist'.format(len(song_ids)))
+        logger.info('Added {} tracks to playlist'.format(len(song_ids)))
 
 
 if __name__ == '__main__':
