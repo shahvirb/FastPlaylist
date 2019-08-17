@@ -20,21 +20,27 @@ def read_csv(filename):
 @click.argument('filename')
 @click.option('--create/--no-create', default=False, help='Creates a playlist')
 @click.option('--name', default=None, help='Playlist name')
-@click.option('--add', default='song', help='Which results to add. Defaults to \'song\'. Values = [\'song\', \'album\']' )
+@click.option('--add', default='song', help='Which results to add. Defaults to "song". Values = ["song, "album"]' )
 @click.option('--step/--no-step', default=False, help='Step through each row in the csv')
-def main(filename, create, name, add, step):
-    logger.addHandler(logging.StreamHandler())
+@click.option('--query', default='all', help='Which results to add. Defaults to "all". Values = ["all", "first"]' )
+def main(filename, create, name, add, step, query):
+    logging.getLogger().addHandler(logging.StreamHandler())
     logger.info('Reading CSV File: {}'.format(filename))
     rows, headers = read_csv(filename)
     logger.info('{} data rows found with header: '.format(len(rows), headers))
-    
+
     gmclient = gmusic.get_authenticated_client()
     tracks = []
     no_results = []
     for row in rows:
-        search = row[headers[0]]
+        search = None
+        if query == 'first':
+            search = row[headers[0]]
+        if query == 'all':
+            search = ' '.join([row[headers[n]] for n in range(len(headers))])
         logger.info('Searching: \"{}\" - {}'.format(search, row))
         raw = gmusic.search(gmclient, search)
+
         hits = []
         if add == 'song':
             hits = gmusic.find_songs(gmclient, raw, row)
@@ -52,7 +58,7 @@ def main(filename, create, name, add, step):
         if step:
             input('Press enter to continue')
     logger.info('Searched for {} rows and found {} tracks'.format(len(rows), len(tracks)))
-    
+
     if create:
         if not name:
             name = filename
