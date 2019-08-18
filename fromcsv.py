@@ -22,9 +22,13 @@ def read_csv(filename):
 @click.option('--name', default=None, help='Playlist name')
 @click.option('--add', default='song', help='Which results to add. Defaults to "song". Values = ["song, "album"]' )
 @click.option('--step/--no-step', default=False, help='Step through each row in the csv')
-@click.option('--query', default='all', help='Which results to add. Defaults to "all". Values = ["all", "first"]' )
+@click.option('--query', default='all', help='Which headers to use when forming search queries. Defaults to "all". Values = ["all", "first"]' )
 def main(filename, create, name, add, step, query):
-    logging.getLogger().addHandler(logging.StreamHandler())
+    handler = logging.StreamHandler()
+    handler.setFormatter(logging.Formatter(fmt=logging.BASIC_FORMAT))
+    logging.getLogger().addHandler(handler)
+    logging.getLogger().setLevel(logging.WARNING)
+
     logger.info('Reading CSV File: {}'.format(filename))
     rows, headers = read_csv(filename)
     logger.info('{} data rows found with header: '.format(len(rows), headers))

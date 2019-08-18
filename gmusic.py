@@ -5,10 +5,10 @@ import gcredentials
 import jellyfish
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.WARNING)
 
 def get_authenticated_client():
-    gmapi = gmusicapi.Mobileclient()
+    gmapi = gmusicapi.Mobileclient(debug_logging=False)
     email = gcredentials.EMAIL_HARDCODE
     logger.info("Attempting login as {} with android ID {}".format(email, gcredentials.AID_HARDCODE))
     success = gmapi.login(email, getpass.getpass(), gcredentials.AID_HARDCODE)
