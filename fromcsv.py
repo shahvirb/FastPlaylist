@@ -25,7 +25,7 @@ def read_csv(filename):
 @click.option('--query', default='all', help='Which headers to use when forming search queries. Defaults to "all". Values = ["all", "first"]' )
 def main(filename, create, name, add, step, query):
     handler = logging.StreamHandler()
-    handler.setFormatter(logging.Formatter(fmt=logging.BASIC_FORMAT))
+    #handler.setFormatter(logging.Formatter(fmt=logging.BASIC_FORMAT))
     logging.getLogger().addHandler(handler)
     logging.getLogger().setLevel(logging.WARNING)
 
@@ -56,12 +56,14 @@ def main(filename, create, name, add, step, query):
                 logger.info('Found: {} - {} - {}'.format(hit['title'], hit['artist'], hit['album']))
                 tracks.append(hit)
         else:
-            warn = 'No results found for {}'.format(search)
-            no_results.append(warn)
-            logger.warning(warn)
+            no_results.append(search)
+            logger.warning('No results: {}'.format(search))
         if step:
             input('Press enter to continue')
     logger.info('Searched for {} rows and found {} tracks'.format(len(rows), len(tracks)))
+    logger.info('No results:')
+    for r in no_results:
+        logger.info(f'\t{r}')
 
     if create:
         if not name:
