@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 import click
+import coloredlogs
 from unidecode import unidecode
 import logging
 
@@ -26,22 +27,33 @@ def process(data):
 
 
 @click.command()
-@click.argument('htmlfile')
 @click.argument('parserpy')
+@click.option('--htmlfile', default=None, help='HTML file path')
+@click.option('--url', default=None, help='URL to fetch HTML')
 @click.option('--csvfile', default=None, help='csv output file path')
-def main(htmlfile, parserpy, csvfile):
+def main(parserpy, htmlfile, url, csvfile):
+    coloredlogs.install()
     logger.addHandler(logging.StreamHandler())
+
     soup = None
-    with open(htmlfile, 'r', encoding='utf8') as html:
+    if url:
+        logger.info(f'Fetching {url}')
+        html = fetch_html(url)
         soup = make_soup(html)
+    if htmlfile:
+        logger.info(f'Opening {htmlfile}')
+        with open(htmlfile, 'r', encoding='utf8') as html:
+            soup = make_soup(html)
     
     logger.info('Importing {}'.format(parserpy))
     parselib = __import__(parserpy)
     parser = parselib.PARSER()
     data = parser.parse(soup)
     data = process(data)
-    logger.debug(data)
+    for line in data:
+        logger.info(line)
     logger.info('Parsed {} rows'.format(len(data)))
+
     
     if csvfile:
         import csv
