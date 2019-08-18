@@ -26,6 +26,18 @@ def process(data):
     return data
 
 
+def parse_soup(parserpy, soup):
+    logger.info('Importing {}'.format(parserpy))
+    parselib = __import__(parserpy)
+    parser = parselib.PARSER()
+    data = parser.parse(soup)
+    data = process(data)
+    for line in data:
+        logger.info(line)
+    logger.info('Parsed {} rows'.format(len(data)))
+    return data
+
+
 @click.command()
 @click.argument('parserpy')
 @click.option('--htmlfile', default=None, help='HTML file path')
@@ -44,17 +56,9 @@ def main(parserpy, htmlfile, url, csvfile):
         logger.info(f'Opening {htmlfile}')
         with open(htmlfile, 'r', encoding='utf8') as html:
             soup = make_soup(html)
-    
-    logger.info('Importing {}'.format(parserpy))
-    parselib = __import__(parserpy)
-    parser = parselib.PARSER()
-    data = parser.parse(soup)
-    data = process(data)
-    for line in data:
-        logger.info(line)
-    logger.info('Parsed {} rows'.format(len(data)))
 
-    
+    data = parse_soup(parserpy, soup)
+
     if csvfile:
         import csv
         with open(csvfile, 'w', newline='') as file:
