@@ -24,6 +24,8 @@ def read_csv(filename):
 @click.option('--step/--no-step', default=False, help='Step through each row in the csv')
 @click.option('--query', default='all', help='Which headers to use when forming search queries. Defaults to "all". Values = ["all", "first"]' )
 def main(filename, create, name, add, step, query):
+    import coloredlogs
+    coloredlogs.install()
     handler = logging.StreamHandler()
     #handler.setFormatter(logging.Formatter(fmt=logging.BASIC_FORMAT))
     logging.getLogger().addHandler(handler)
@@ -61,9 +63,9 @@ def main(filename, create, name, add, step, query):
         if step:
             input('Press enter to continue')
     logger.info('Searched for {} rows and found {} tracks'.format(len(rows), len(tracks)))
-    logger.info('No results:')
+    logger.warning('No results:')
     for r in no_results:
-        logger.info(f'\t{r}')
+        logger.warning(f'\t{r}')
 
     if create:
         if not name:
