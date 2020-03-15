@@ -35,8 +35,8 @@ def main(csv, url, parser, create, name, add, step, query):
     logging.getLogger().setLevel(logging.WARNING)
 
     if csv:
-        logger.info('Reading CSV File: {}'.format(filename))
-        data, keys = read_csv(filename)
+        logger.info('Reading CSV File: {}'.format(csv))
+        data, keys = read_csv(csv)
         logger.info('{} data rows found with header: '.format(len(data), keys))
     if url:
         logger.info(f'Fetching {url}')
@@ -50,10 +50,11 @@ def main(csv, url, parser, create, name, add, step, query):
     no_results = []
     for row in data:
         search = None
-        if query == 'first':
-            search = row[keys[0]]
+
         if query == 'all':
             search = ' '.join([row[keys[n]] for n in range(len(keys))])
+        else:
+            search = row[query]
         logger.info('Searching: \"{}\" - {}'.format(search, row))
         raw = gmusic.search(gmclient, search)
 

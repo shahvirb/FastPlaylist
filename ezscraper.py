@@ -45,7 +45,7 @@ def parse_soup(parserpy, soup):
 @click.option('--csvfile', default=None, help='csv output file path')
 def main(parserpy, htmlfile, url, csvfile):
     coloredlogs.install()
-    logger.addHandler(logging.StreamHandler())
+    #logger.addHandler(logging.StreamHandler())
 
     soup = None
     if url:
