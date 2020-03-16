@@ -5,3 +5,4 @@ gmusicapi
 jellyfish
 requests
 Unidecode
+flask
