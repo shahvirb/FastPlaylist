@@ -11,13 +11,13 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 @app.route('/')
 def index():
-    return flask.render_template('index.html')
+    parser_paths = find_parsers.find_parsers()
+    return flask.render_template('index.html', parsers=parser_paths)
 
 
 @app.route('/parse_html_file')
 def parse_html_file():
-    parser_paths = find_parsers.find_parsers()
-    return flask.render_template('parse_html.html', html_name=flask.request.args.get('load_file'), parsers=parser_paths,
+    return flask.render_template('parse_html.html', html_name=flask.request.args.get('load_file'),
                                  selected_parser=flask.request.args.get('sel_parser'))
 
 

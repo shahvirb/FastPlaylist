@@ -2,25 +2,11 @@
 {% block title %}Parse HTML{% endblock %}
 
 {% block content %}
-<div class="container card">
-    <h4 class="card-header">Select Parser</h4>
-    <div class="card-body">
-        <form class="form-inline" action="/parse_html_file?load_file={{html_name}}">
-            <select class="form-control mb-2 mr-sm-2" id="sel_parser" , name="sel_parser">
-                {% for opt in parsers %}
-                <option>{{ opt }}</option>
-                {% endfor %}
-            </select>
-            <button type="submit" class="btn btn-primary mb-2">Select</button>
-        </form>
-    </div>
-</div>
 
-{% if selected_parser %}
 <div class="container card">
     <h4 class="card-header">Parse {{html_name}} with {{selected_parser}}</h4>
     <div class="card-body ">
     </div>
 </div>
-{% endif %}
+
 {% endblock %}
