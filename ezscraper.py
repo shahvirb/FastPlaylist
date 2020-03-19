@@ -47,17 +47,10 @@ def main(parserpy, htmlfile, url, csvfile):
     coloredlogs.install()
     #logger.addHandler(logging.StreamHandler())
 
-    soup = None
     if url:
-        logger.info(f'Fetching {url}')
-        html = fetch_html(url)
-        soup = make_soup(html)
+        data = parse_url(parserpy, url)
     if htmlfile:
-        logger.info(f'Opening {htmlfile}')
-        with open(htmlfile, 'r', encoding='utf8') as html:
-            soup = make_soup(html)
-
-    data = parse_soup(parserpy, soup)
+        data = parse_html_file(htmlfile)
 
     if csvfile:
         import csv
@@ -67,6 +60,22 @@ def main(parserpy, htmlfile, url, csvfile):
             writer.writeheader()
             writer.writerows(data)
         logger.info('Write complete')
+
+
+def parse_html_file(parserpy, htmlfile):
+    logger.info(f'Opening {htmlfile}')
+    with open(htmlfile, 'r', encoding='utf8') as html:
+        soup = make_soup(html)
+    data = parse_soup(parserpy, soup)
+    return data
+
+
+def parse_url(parserpy, url):
+    logger.info(f'Fetching {url}')
+    html = fetch_html(url)
+    soup = make_soup(html)
+    data = parse_soup(parserpy, soup)
+    return data
 
 
 if __name__ == '__main__':

@@ -3,9 +3,33 @@
 
 {% block content %}
 
-<div class="container card">
+<div class="container">
     <h4 class="card-header">Parse {{html_name}} with {{selected_parser}}</h4>
     <div class="card-body ">
+        {% if error_message %}
+        <p class="bg-danger">{{error_message}}</p>
+        {% else %}
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                {% for header_entry in parsed_output[0].keys() %}
+                <th scope="col">{{header_entry}}</th>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for row in parsed_output %}
+            <tr>
+                {% for entry in row.values() %}
+                <td>{{entry}}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+        {% endif %}
     </div>
 </div>
 
